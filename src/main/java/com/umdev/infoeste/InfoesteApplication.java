@@ -1,0 +1,13 @@
+package com.umdev.infoeste;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class InfoesteApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(InfoesteApplication.class, args);
+    }
+
+}

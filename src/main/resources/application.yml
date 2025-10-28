@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME}
+    version: ${SPRING_APPLICATION_VERSION}
+
+  datasource:
+    driver-class-name: ${DB_DRIVER}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO}
+    properties:
+      hibernate:
+        show_sql: ${HIBERNATE_SHOW_SQL}
+    open-in-view: ${OPEN_IN_VIEW}
+
+  config:
+    import: file:./.env[.properties],file:.env[.properties]
+
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT}
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
