@@ -66,8 +66,6 @@ public class SecurityConfig {
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         config.setAllowCredentials(true);
 
-        config.applyPermitDefaultValues();
-
         source.registerCorsConfiguration("/**", config);
         return source;
     }
