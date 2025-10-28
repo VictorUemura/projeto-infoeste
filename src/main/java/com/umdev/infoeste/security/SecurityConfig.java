@@ -63,11 +63,11 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(Collections.singletonList("*"));
+        config.setAllowedOriginPatterns(Collections.singletonList("*"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setExposedHeaders(Collections.singletonList("*"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
 
         source.registerCorsConfiguration("/**", config);
         return source;
