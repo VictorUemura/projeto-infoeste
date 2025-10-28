@@ -17,9 +17,6 @@ spring:
         show_sql: ${HIBERNATE_SHOW_SQL}
     open-in-view: ${OPEN_IN_VIEW}
 
-  config:
-    import: file:./.env[.properties],file:.env[.properties]
-
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT}
