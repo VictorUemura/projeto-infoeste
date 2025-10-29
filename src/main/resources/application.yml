@@ -8,7 +8,6 @@ spring:
       enabled: true
       max-file-size: 5MB
       max-request-size: 10MB
-      resolve-lazily: false
 
   datasource:
     driver-class-name: ${DB_DRIVER}

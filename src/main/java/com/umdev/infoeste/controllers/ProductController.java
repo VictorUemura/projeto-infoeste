@@ -46,7 +46,7 @@ public class ProductController {
     }
 
 
-    @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Criar novo produto",
         description = "Cria um novo produto com imagem para a loja autenticada. Requer autenticação JWT.",
@@ -63,130 +63,81 @@ public class ProductController {
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Dados inválidos ou arquivo de imagem inválido",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                examples = {
-                    @ExampleObject(name = "Validation Error", value = """
-                        {
-                          "timestamp": "2025-10-29T10:30:00-03:00",
-                          "path": "uri=/v1/products",
-                          "status": 400,
-                          "error": "Bad Request",
-                          "message": "Validation failed for one or more fields.",
-                          "validationErrors": [
-                            {"field": "name", "message": "Name is required"},
-                            {"field": "price", "message": "Price must be greater than 0"}
-                          ]
-                        }
-                        """),
-                    @ExampleObject(name = "File Error", value = """
-                        {
-                          "timestamp": "2025-10-29T10:30:00-03:00",
-                          "path": "uri=/v1/products",
-                          "status": 400,
-                          "error": "Bad Request",
-                          "message": "Only JPG, PNG, and WEBP images are allowed"
-                        }
-                        """)
-                }
-            )
+            description = "Dados inválidos ou arquivo de imagem inválido"
         ),
         @ApiResponse(
             responseCode = "401",
-            description = "Token JWT inválido, ausente ou expirado",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                examples = @ExampleObject(value = """
-                    {
-                      "timestamp": "2025-10-29T10:30:00-03:00",
-                      "path": "uri=/v1/products",
-                      "status": 401,
-                      "error": "Unauthorized",
-                      "message": "Token expired. Please login again."
-                    }
-                    """)
-            )
+            description = "Token JWT inválido, ausente ou expirado"
         ),
         @ApiResponse(
             responseCode = "404",
-            description = "Loja não encontrada com o email do token",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                examples = @ExampleObject(value = """
-                    {
-                      "timestamp": "2025-10-29T10:30:00-03:00",
-                      "path": "uri=/v1/products",
-                      "status": 404,
-                      "error": "Not Found",
-                      "message": "Store not found with email: store@example.com"
-                    }
-                    """)
-            )
+            description = "Loja não encontrada com o email do token"
         ),
         @ApiResponse(
             responseCode = "413",
-            description = "Arquivo de imagem muito grande (máximo 5MB)",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                examples = @ExampleObject(value = """
-                    {
-                      "timestamp": "2025-10-29T10:30:00-03:00",
-                      "path": "uri=/v1/products",
-                      "status": 413,
-                      "error": "Payload Too Large",
-                      "message": "File size exceeds maximum allowed limit"
-                    }
-                    """)
-            )
+            description = "Arquivo de imagem muito grande (máximo 5MB)"
         ),
         @ApiResponse(
             responseCode = "500",
-            description = "Erro interno no processamento da imagem",
-            content = @Content(
-                mediaType = MediaType.APPLICATION_JSON_VALUE,
-                examples = @ExampleObject(value = """
-                    {
-                      "timestamp": "2025-10-29T10:30:00-03:00",
-                      "path": "uri=/v1/products",
-                      "status": 500,
-                      "error": "Internal Server Error",
-                      "message": "Internal processing error: Error processing image file"
-                    }
-                    """)
-            )
+            description = "Erro interno no processamento da imagem"
         )
     })
-    public ResponseEntity<ProductCreateResponseDto> createProduct(
+    public ResponseEntity<ProductCreateResponseDto> createProductNew(
             Authentication authentication,
             @Parameter(description = "Nome do produto", required = true, example = "Notebook Gamer")
-            @RequestPart("name") @NotBlank(message = "Name is required") String name,
+            @RequestPart("name") String name,
             
-            @Parameter(description = "Descrição detalhada do produto", example = "Notebook gamer de alta performance com placa de vídeo dedicada")
+            @Parameter(description = "Descrição detalhada do produto", example = "Notebook gamer de alta performance")
             @RequestPart(value = "description", required = false) String description,
             
             @Parameter(description = "Preço do produto em reais", required = true, example = "2999.99")
-            @RequestPart("price") @NotNull(message = "Price is required")
-            @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0") BigDecimal price,
+            @RequestPart("price") String price,
             
             @Parameter(description = "Quantidade em estoque", required = true, example = "50")
-            @RequestPart("stock") @NotNull(message = "Stock is required")
-            @Min(value = 0, message = "Stock must be 0 or greater") Integer stock,
+            @RequestPart("stock") String stock,
             
             @Parameter(description = "Categoria do produto", example = "Eletrônicos")
             @RequestPart(value = "category", required = false) String category,
             
             @Parameter(description = "Imagem do produto (JPG, PNG ou WEBP, máximo 5MB)", required = true)
-            @RequestPart(value = "file", required = true) MultipartFile file) {
+            @RequestPart("file") MultipartFile file) {
         
-        logger.info("Received createProduct request - name: {}, price: {}, file: {}", name, price, file.getOriginalFilename());
+        logger.info("=== NEW CREATE PRODUCT ENDPOINT ===");
+        logger.info("Received data - name: {}, price: {}, stock: {}, file: {}", 
+                name, price, stock, file.getOriginalFilename());
         logger.info("File details - size: {}, contentType: {}", file.getSize(), file.getContentType());
         
-        ProductCreateDto productDto = new ProductCreateDto(name, description, price, stock, category);
-        
-        String storeEmail = authentication.getName();
-        ProductCreateResponseDto response = productService.createProduct(storeEmail, productDto, file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        try {
+            // Validações básicas
+            if (name == null || name.trim().isEmpty()) {
+                throw new IllegalArgumentException("Name is required");
+            }
+            
+            BigDecimal priceValue = new BigDecimal(price);
+            if (priceValue.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Price must be greater than 0");
+            }
+            
+            Integer stockValue = Integer.parseInt(stock);
+            if (stockValue < 0) {
+                throw new IllegalArgumentException("Stock must be 0 or greater");
+            }
+            
+            ProductCreateDto productDto = new ProductCreateDto(name, description, priceValue, stockValue, category);
+            
+            String storeEmail = authentication.getName();
+            ProductCreateResponseDto response = productService.createProduct(storeEmail, productDto, file);
+            
+            logger.info("=== PRODUCT CREATED SUCCESSFULLY ===");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            
+        } catch (NumberFormatException e) {
+            logger.error("Error parsing numeric values", e);
+            throw new IllegalArgumentException("Invalid price or stock format");
+        } catch (Exception e) {
+            logger.error("Error creating product", e);
+            throw e;
+        }
     }
 
     @GetMapping("/my")
