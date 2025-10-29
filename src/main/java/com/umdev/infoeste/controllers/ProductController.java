@@ -191,7 +191,30 @@ public class ProductController {
             description = "Lista de produtos retornada com sucesso",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = ProductMyListDto.class)
+                schema = @Schema(
+                    type = "array",
+                    implementation = ProductMyListDto.class
+                ),
+                examples = @ExampleObject(value = """
+                    [
+                      {
+                        "id": "123e4567-e89b-12d3-a456-426614174000",
+                        "name": "Notebook Gamer",
+                        "price": 2999.99,
+                        "stock": 15,
+                        "category": "Eletrônicos",
+                        "createdAt": "2025-10-29T10:30:00"
+                      },
+                      {
+                        "id": "987fcdeb-51a2-43e1-b789-123456789abc",
+                        "name": "Mouse Gaming",
+                        "price": 149.90,
+                        "stock": 50,
+                        "category": "Periféricos",
+                        "createdAt": "2025-10-28T15:20:00"
+                      }
+                    ]
+                    """)
             )
         ),
         @ApiResponse(
@@ -381,7 +404,42 @@ public class ProductController {
             description = "Lista de produtos retornada com sucesso",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = PaginatedResponseDto.class)
+                schema = @Schema(implementation = PaginatedResponseDto.class),
+                examples = @ExampleObject(value = """
+                    {
+                      "meta": {
+                        "page": 1,
+                        "limit": 10,
+                        "total": 25
+                      },
+                      "data": [
+                        {
+                          "id": "123e4567-e89b-12d3-a456-426614174000",
+                          "name": "Notebook Gamer",
+                          "price": 2999.99,
+                          "category": "Eletrônicos",
+                          "imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA...",
+                          "store": {
+                            "id": "store-uuid",
+                            "name": "Tech Store",
+                            "city": "São Paulo"
+                          }
+                        },
+                        {
+                          "id": "987fcdeb-51a2-43e1-b789-123456789abc",
+                          "name": "Mouse Gaming",
+                          "price": 149.90,
+                          "category": "Periféricos",
+                          "imageBase64": "data:image/png;base64,iVBORw0KGgoAAA...",
+                          "store": {
+                            "id": "store-uuid-2",
+                            "name": "Gamer Store",
+                            "city": "Rio de Janeiro"
+                          }
+                        }
+                      ]
+                    }
+                    """)
             )
         ),
         @ApiResponse(
@@ -424,7 +482,30 @@ public class ProductController {
             description = "Lista de produtos da loja retornada com sucesso",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = PaginatedResponseDto.class)
+                schema = @Schema(implementation = PaginatedResponseDto.class),
+                examples = @ExampleObject(value = """
+                    {
+                      "meta": {
+                        "page": 1,
+                        "limit": 10,
+                        "total": 8
+                      },
+                      "data": [
+                        {
+                          "id": "123e4567-e89b-12d3-a456-426614174000",
+                          "name": "Notebook Gamer",
+                          "price": 2999.99,
+                          "category": "Eletrônicos",
+                          "imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA...",
+                          "store": {
+                            "id": "store-uuid",
+                            "name": "Tech Store",
+                            "city": "São Paulo"
+                          }
+                        }
+                      ]
+                    }
+                    """)
             )
         ),
         @ApiResponse(

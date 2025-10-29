@@ -261,7 +261,32 @@ public class StoreController {
             description = "Lista de lojas retornada com sucesso",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = PaginatedResponseDto.class)
+                schema = @Schema(implementation = PaginatedResponseDto.class),
+                examples = @ExampleObject(value = """
+                    {
+                      "meta": {
+                        "page": 1,
+                        "limit": 10,
+                        "total": 15
+                      },
+                      "data": [
+                        {
+                          "id": "store-uuid-1",
+                          "name": "Tech Store",
+                          "description": "Loja especializada em produtos tecnológicos",
+                          "city": "São Paulo",
+                          "phone": "(11) 99999-9999"
+                        },
+                        {
+                          "id": "store-uuid-2",
+                          "name": "Gamer Store",
+                          "description": "Equipamentos para gamers",
+                          "city": "Rio de Janeiro",
+                          "phone": "(21) 88888-8888"
+                        }
+                      ]
+                    }
+                    """)
             )
         ),
         @ApiResponse(
