@@ -108,7 +108,6 @@ public class ProductController {
         logger.info("File details - size: {}, contentType: {}", file.getSize(), file.getContentType());
         
         try {
-            // Validações básicas
             if (name == null || name.trim().isEmpty()) {
                 throw new IllegalArgumentException("Name is required");
             }
@@ -378,6 +377,7 @@ public class ProductController {
                           "id": "123e4567-e89b-12d3-a456-426614174000",
                           "name": "Notebook Gamer",
                           "price": 2999.99,
+                          "stock": 15,
                           "category": "Eletrônicos",
                           "imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA...",
                           "store": {
@@ -390,6 +390,7 @@ public class ProductController {
                           "id": "987fcdeb-51a2-43e1-b789-123456789abc",
                           "name": "Mouse Gaming",
                           "price": 149.90,
+                          "stock": 50,
                           "category": "Periféricos",
                           "imageBase64": "data:image/png;base64,iVBORw0KGgoAAA...",
                           "store": {
@@ -456,6 +457,7 @@ public class ProductController {
                           "id": "123e4567-e89b-12d3-a456-426614174000",
                           "name": "Notebook Gamer",
                           "price": 2999.99,
+                          "stock": 15,
                           "category": "Eletrônicos",
                           "imageBase64": "data:image/jpeg;base64,/9j/4AAQSkZJRgABA...",
                           "store": {

@@ -7,6 +7,8 @@ public record ProductPublicDto(
         UUID id,
         String name,
         BigDecimal price,
+        Integer stock,
+        String category,
         String storeName,
         String imageUrl
 ) {
