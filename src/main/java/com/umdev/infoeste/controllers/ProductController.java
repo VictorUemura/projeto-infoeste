@@ -31,13 +31,13 @@ public class ProductController {
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ProductCreateResponseDto> createProduct(
             Authentication authentication,
-            @RequestParam("name") @NotBlank(message = "Name is required") String name,
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam("price") @NotNull(message = "Price is required") 
+            @RequestPart("name") @NotBlank(message = "Name is required") String name,
+            @RequestPart(value = "description", required = false) String description,
+            @RequestPart("price") @NotNull(message = "Price is required")
             @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0") BigDecimal price,
-            @RequestParam("stock") @NotNull(message = "Stock is required") 
+            @RequestPart("stock") @NotNull(message = "Stock is required")
             @Min(value = 0, message = "Stock must be 0 or greater") Integer stock,
-            @RequestParam(value = "category", required = false) String category,
+            @RequestPart(value = "category", required = false) String category,
             @RequestPart("file") MultipartFile file) {
         ProductCreateDto productDto = new ProductCreateDto(name, description, price, stock, category);
         
