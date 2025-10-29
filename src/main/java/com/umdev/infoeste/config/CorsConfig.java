@@ -17,7 +17,7 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Permitir origins específicos ou todos
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOrigins(List.of("*"));
         
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(Arrays.asList(
