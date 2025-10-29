@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -45,6 +46,28 @@ public class ProductController {
     }
 
     @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(
+        summary = "Criar novo produto",
+        description = "Cria um novo produto com imagem para a loja autenticada. Requer autenticação JWT.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<String> createProductDebugInterceptor(
+            HttpServletRequest request) {
+        
+        logger.info("=== DEBUG INTERCEPTOR ===");
+        logger.info("Request method: {}", request.getMethod());
+        logger.info("Request URI: {}", request.getRequestURI());
+        logger.info("Content type: {}", request.getContentType());
+        logger.info("Content length: {}", request.getContentLength());
+        
+        logger.info("Headers:");
+        request.getHeaderNames().asIterator().forEachRemaining(header -> 
+            logger.info("  {}: {}", header, request.getHeader(header)));
+        
+        return ResponseEntity.ok("Debug interceptor reached successfully");
+    }
+
+    @PostMapping(value = "/original", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Criar novo produto",
         description = "Cria um novo produto com imagem para a loja autenticada. Requer autenticação JWT.",
