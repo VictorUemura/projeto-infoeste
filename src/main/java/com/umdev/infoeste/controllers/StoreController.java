@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/stores")
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class StoreController {
 
     private final StoreService storeService;

@@ -41,8 +41,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**", "/v3/api-docs", "/swagger-ui/index.html", "/webjars/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/stores/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/stores/register").permitAll()
+                        .requestMatchers("/v1/stores/login").permitAll()
+                        .requestMatchers("/v1/stores/register").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticatorFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((exceptionHandling) -> exceptionHandling.
@@ -65,11 +65,21 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOriginPatterns(Collections.singletonList("*"));
-        config.setAllowedMethods(Collections.singletonList("*"));
-        config.setAllowedHeaders(Collections.singletonList("*"));
-        config.setExposedHeaders(Collections.singletonList("*"));
-        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
+        
+        config.addAllowedMethod("*");
+        
+        config.addAllowedHeader("*");
+        
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Content-Type");
+        config.addExposedHeader("X-Requested-With");
+        config.addExposedHeader("Accept");
+        config.addExposedHeader("Origin");
+        config.addExposedHeader("Access-Control-Request-Method");
+        config.addExposedHeader("Access-Control-Request-Headers");
+        
+        config.setAllowCredentials(false);
 
         source.registerCorsConfiguration("/**", config);
         return source;
