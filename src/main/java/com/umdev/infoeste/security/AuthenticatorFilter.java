@@ -25,17 +25,26 @@ public class AuthenticatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jws = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (jws != null) {
-            String user = jwtService.getAuthUser(request);
 
-            Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(user, null,
-                            Collections.emptyList());
-
-            SecurityContextHolder.getContext()
-                    .setAuthentication(authentication);
+        if (jws == null || !jws.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
+        try {
+            String user = jwtService.getAuthUser(request);
+            if (user != null) {
+                Authentication authentication =
+                        new UsernamePasswordAuthenticationToken(user, null,
+                                Collections.emptyList());
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
+            }
+
+        } catch (Exception e) {
+            logger.warn("Tentativa de autenticação falhou com token inválido: " + e.getMessage());
+        }
         filterChain.doFilter(request, response);
     }
 }
