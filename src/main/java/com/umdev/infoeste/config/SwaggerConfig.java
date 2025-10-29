@@ -33,8 +33,11 @@ public class SwaggerConfig {
                                                 .scheme("bearer")
                                                 .bearerFormat("JWT")
                                                 .description("Token JWT obtido através do endpoint de login")
+                                                .in(SecurityScheme.In.HEADER)
                                 )
                 )
+                // Aplicar segurança globalmente para todos os endpoints
+                .security(List.of(new SecurityRequirement().addList(securitySchemeName)))
                 .info(new Info()
                         .title("INFOESTE API")
                         .version(apiVersion)
