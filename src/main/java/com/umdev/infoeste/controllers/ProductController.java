@@ -695,7 +695,7 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/test-multipart")
+    @PostMapping(value = "/test-multipart", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Test multipart endpoint",
         description = "Simple endpoint to test multipart form data handling",
@@ -712,7 +712,7 @@ public class ProductController {
         return ResponseEntity.ok("Success - name: " + name + ", file: " + file.getOriginalFilename());
     }
 
-    @PostMapping("/debug-simple")
+    @PostMapping(value = "/debug-simple", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Debug simple multipart",
         description = "Debug multipart without authentication"
