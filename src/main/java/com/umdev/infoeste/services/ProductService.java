@@ -151,6 +151,33 @@ public class ProductService {
         return new PaginatedResponseDto<>(meta, productList);
     }
 
+    public PaginatedResponseDto<ProductPublicDto> getProductsByStore(UUID storeId, int page, int limit, 
+                                                                   String query, String category, 
+                                                                   BigDecimal minPrice, BigDecimal maxPrice) {
+        productLogger.info("Fetching products for store {} - page: {}, limit: {}, query: {}, category: {}", 
+                          storeId, page, limit, query, category);
+        
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException("Store not found with id: " + storeId));
+        
+        Pageable pageable = PageRequest.of(page - 1, limit);
+        Page<Product> productPage = productRepository.findProductsByStoreWithFilters(
+                storeId, query, category, minPrice, maxPrice, pageable);
+
+        List<ProductPublicDto> productList = productPage.getContent()
+                .stream()
+                .map(productMapper::toPublicDto)
+                .toList();
+
+        PaginatedResponseDto.MetaData meta = new PaginatedResponseDto.MetaData(
+                page, 
+                limit, 
+                productPage.getTotalElements()
+        );
+
+        return new PaginatedResponseDto<>(meta, productList);
+    }
+
     public ProductDetailDto getProductById(UUID productId) {
         productLogger.info("Fetching product details for ID: {}", productId);
         

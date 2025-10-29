@@ -32,4 +32,19 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             @Param("maxPrice") BigDecimal maxPrice,
             Pageable pageable
     );
+    
+    @Query("SELECT p FROM Product p WHERE " +
+           "p.store.id = :storeId AND " +
+           "(:q IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :q, '%'))) AND " +
+           "(:category IS NULL OR LOWER(p.category) = LOWER(:category)) AND " +
+           "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
+           "(:maxPrice IS NULL OR p.price <= :maxPrice)")
+    Page<Product> findProductsByStoreWithFilters(
+            @Param("storeId") UUID storeId,
+            @Param("q") String query,
+            @Param("category") String category,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable
+    );
 }

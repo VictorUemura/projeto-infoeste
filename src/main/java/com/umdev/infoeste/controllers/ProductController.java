@@ -89,6 +89,21 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/store/{storeId}")
+    public ResponseEntity<PaginatedResponseDto<ProductPublicDto>> getProductsByStore(
+            @PathVariable UUID storeId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice) {
+        
+        PaginatedResponseDto<ProductPublicDto> response = productService.getProductsByStore(
+                storeId, page, limit, q, category, minPrice, maxPrice);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetailDto> getProductById(@PathVariable UUID productId) {
         ProductDetailDto product = productService.getProductById(productId);
