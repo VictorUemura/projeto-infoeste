@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/stores/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/stores/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/stores/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticatorFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling

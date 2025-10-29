@@ -22,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,13 +36,15 @@ import java.util.UUID;
 @Tag(name = "Products", description = "API de gerenciamento de produtos")
 public class ProductController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
     private final ProductService productService;
 
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
-    @PostMapping(consumes = {"multipart/form-data"})
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Criar novo produto",
         description = "Cria um novo produto com imagem para a loja autenticada. Requer autenticação JWT.",
@@ -172,6 +176,10 @@ public class ProductController {
             
             @Parameter(description = "Imagem do produto (JPG, PNG ou WEBP, máximo 5MB)", required = true)
             @RequestPart("file") MultipartFile file) {
+        
+        logger.info("Received createProduct request - name: {}, price: {}, file: {}", name, price, file.getOriginalFilename());
+        logger.info("File details - size: {}, contentType: {}", file.getSize(), file.getContentType());
+        
         ProductCreateDto productDto = new ProductCreateDto(name, description, price, stock, category);
         
         String storeEmail = authentication.getName();
@@ -349,7 +357,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping(value = "/{productId}/image", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/{productId}/image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Atualizar imagem do produto",
         description = "Atualiza a imagem de um produto específico da loja autenticada. Requer autenticação JWT.",
@@ -685,5 +693,22 @@ public class ProductController {
         String storeEmail = authentication.getName();
         productService.deleteProduct(storeEmail, productId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/test-multipart")
+    @Operation(
+        summary = "Test multipart endpoint",
+        description = "Simple endpoint to test multipart form data handling",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<String> testMultipart(
+            Authentication authentication,
+            @RequestPart("name") String name,
+            @RequestPart("file") MultipartFile file) {
+        
+        logger.info("Test multipart - name: {}, file: {}, size: {}, contentType: {}", 
+                name, file.getOriginalFilename(), file.getSize(), file.getContentType());
+        
+        return ResponseEntity.ok("Success - name: " + name + ", file: " + file.getOriginalFilename());
     }
 }
