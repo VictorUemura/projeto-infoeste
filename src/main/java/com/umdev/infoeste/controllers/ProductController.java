@@ -44,7 +44,7 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Criar novo produto",
         description = "Cria um novo produto com imagem para a loja autenticada. Requer autenticação JWT.",
@@ -175,7 +175,7 @@ public class ProductController {
             @RequestPart(value = "category", required = false) String category,
             
             @Parameter(description = "Imagem do produto (JPG, PNG ou WEBP, máximo 5MB)", required = true)
-            @RequestPart("file") MultipartFile file) {
+            @RequestPart(value = "file", required = true) MultipartFile file) {
         
         logger.info("Received createProduct request - name: {}, price: {}, file: {}", name, price, file.getOriginalFilename());
         logger.info("File details - size: {}, contentType: {}", file.getSize(), file.getContentType());
@@ -710,6 +710,37 @@ public class ProductController {
                 name, file.getOriginalFilename(), file.getSize(), file.getContentType());
         
         return ResponseEntity.ok("Success - name: " + name + ", file: " + file.getOriginalFilename());
+    }
+
+    @PostMapping(value = "/debug-create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(
+        summary = "Debug create product",
+        description = "Debug version of create product with minimal validation",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<String> debugCreateProduct(
+            Authentication authentication,
+            @RequestPart("name") String name,
+            @RequestPart(value = "description", required = false) String description,
+            @RequestPart("price") String price,
+            @RequestPart("stock") String stock,
+            @RequestPart(value = "category", required = false) String category,
+            @RequestPart("file") MultipartFile file) {
+        
+        logger.info("Debug create product - name: {}, price: {}, stock: {}, file: {}", 
+                name, price, stock, file.getOriginalFilename());
+        
+        try {
+            BigDecimal priceValue = new BigDecimal(price);
+            Integer stockValue = Integer.parseInt(stock);
+            
+            return ResponseEntity.ok("Success - name: " + name + 
+                    ", price: " + priceValue + 
+                    ", stock: " + stockValue + 
+                    ", file: " + file.getOriginalFilename());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error parsing values: " + e.getMessage());
+        }
     }
 
     @PostMapping(value = "/debug-simple", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
