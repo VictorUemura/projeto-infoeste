@@ -17,6 +17,9 @@ spring:
         show_sql: ${HIBERNATE_SHOW_SQL}
     open-in-view: ${OPEN_IN_VIEW}
 
+server:
+  forward-headers-strategy: FRAMEWORK
+
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT}
