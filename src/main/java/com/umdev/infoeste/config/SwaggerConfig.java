@@ -24,10 +24,6 @@ public class SwaggerConfig {
         final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
-                .servers(List.of(
-                    new Server().url("http://localhost:8080").description("Servidor de Desenvolvimento"),
-                    new Server().url("https://api.infoeste.com").description("Servidor de Produção")
-                ))
                 .components(
                         new Components()
                                 .addSecuritySchemes(securitySchemeName,
@@ -45,14 +41,6 @@ public class SwaggerConfig {
                         .description("""
                             API REST para o sistema INFOESTE - Plataforma de E-commerce para Lojas
                             
-                            ## Funcionalidades Principais:
-                            - **Autenticação JWT**: Sistema de login seguro para lojas
-                            - **Gerenciamento de Produtos**: CRUD completo com upload de imagens
-                            - **Gerenciamento de Lojas**: Registro, perfil e listagem pública
-                            - **Busca e Filtros**: Sistema avançado de busca por produtos e lojas
-                            - **Paginação**: Todas as listagens são paginadas para melhor performance
-                            
-                            ## Como Usar:
                             1. Registre uma nova loja usando `/v1/stores/register`
                             2. Faça login com `/v1/stores/login` para obter o token JWT
                             3. Use o token no header `Authorization: Bearer <token>` para endpoints protegidos
@@ -63,13 +51,6 @@ public class SwaggerConfig {
                             - Tamanho máximo: 5MB
                             - Imagens são armazenadas em Base64
                             """)
-                        .contact(new Contact()
-                                .name("Equipe INFOESTE")
-                                .email("contato@infoeste.com")
-                                .url("https://www.infoeste.com"))
-                        .license(new License()
-                                .name("MIT License")
-                                .url("https://opensource.org/licenses/MIT"))
                 );
     }
 
