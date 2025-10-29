@@ -711,4 +711,23 @@ public class ProductController {
         
         return ResponseEntity.ok("Success - name: " + name + ", file: " + file.getOriginalFilename());
     }
+
+    @PostMapping("/debug-simple")
+    @Operation(
+        summary = "Debug simple multipart",
+        description = "Debug multipart without authentication"
+    )
+    public ResponseEntity<String> debugSimple(
+            @RequestPart("name") String name,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        
+        logger.info("Debug simple - name: {}", name);
+        if (file != null) {
+            logger.info("File details - name: {}, size: {}, contentType: {}", 
+                    file.getOriginalFilename(), file.getSize(), file.getContentType());
+            return ResponseEntity.ok("Success - name: " + name + ", file: " + file.getOriginalFilename());
+        } else {
+            return ResponseEntity.ok("Success - name: " + name + ", no file");
+        }
+    }
 }
