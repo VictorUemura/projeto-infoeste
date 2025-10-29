@@ -45,29 +45,8 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    @Operation(
-        summary = "Criar novo produto",
-        description = "Cria um novo produto com imagem para a loja autenticada. Requer autenticação JWT.",
-        security = @SecurityRequirement(name = "bearerAuth")
-    )
-    public ResponseEntity<String> createProductDebugInterceptor(
-            HttpServletRequest request) {
-        
-        logger.info("=== DEBUG INTERCEPTOR ===");
-        logger.info("Request method: {}", request.getMethod());
-        logger.info("Request URI: {}", request.getRequestURI());
-        logger.info("Content type: {}", request.getContentType());
-        logger.info("Content length: {}", request.getContentLength());
-        
-        logger.info("Headers:");
-        request.getHeaderNames().asIterator().forEachRemaining(header -> 
-            logger.info("  {}: {}", header, request.getHeader(header)));
-        
-        return ResponseEntity.ok("Debug interceptor reached successfully");
-    }
 
-    @PostMapping(value = "/original", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Operation(
         summary = "Criar novo produto",
         description = "Cria um novo produto com imagem para a loja autenticada. Requer autenticação JWT.",
@@ -181,16 +160,18 @@ public class ProductController {
     public ResponseEntity<ProductCreateResponseDto> createProduct(
             Authentication authentication,
             @Parameter(description = "Nome do produto", required = true, example = "Notebook Gamer")
-            @RequestPart("name") String name,
+            @RequestPart("name") @NotBlank(message = "Name is required") String name,
             
             @Parameter(description = "Descrição detalhada do produto", example = "Notebook gamer de alta performance com placa de vídeo dedicada")
             @RequestPart(value = "description", required = false) String description,
             
             @Parameter(description = "Preço do produto em reais", required = true, example = "2999.99")
-            @RequestPart("price") BigDecimal price,
+            @RequestPart("price") @NotNull(message = "Price is required")
+            @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0") BigDecimal price,
             
             @Parameter(description = "Quantidade em estoque", required = true, example = "50")
-            @RequestPart("stock") Integer stock,
+            @RequestPart("stock") @NotNull(message = "Stock is required")
+            @Min(value = 0, message = "Stock must be 0 or greater") Integer stock,
             
             @Parameter(description = "Categoria do produto", example = "Eletrônicos")
             @RequestPart(value = "category", required = false) String category,
@@ -200,16 +181,6 @@ public class ProductController {
         
         logger.info("Received createProduct request - name: {}, price: {}, file: {}", name, price, file.getOriginalFilename());
         logger.info("File details - size: {}, contentType: {}", file.getSize(), file.getContentType());
-        
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name is required");
-        }
-        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price is required and must be greater than 0");
-        }
-        if (stock == null || stock < 0) {
-            throw new IllegalArgumentException("Stock is required and must be 0 or greater");
-        }
         
         ProductCreateDto productDto = new ProductCreateDto(name, description, price, stock, category);
         
