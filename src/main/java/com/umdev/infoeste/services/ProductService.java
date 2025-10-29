@@ -41,29 +41,48 @@ public class ProductService {
 
     public ProductCreateResponseDto createProduct(String storeEmail, ProductCreateDto productDto, 
                                                 MultipartFile file) {
-        productLogger.info("Creating product for store: {}", storeEmail);
+        productLogger.info("=== STARTING PRODUCT CREATION ===");
+        productLogger.info("Store email: {}", storeEmail);
+        productLogger.info("Product data: name={}, price={}, stock={}, category={}", 
+                          productDto.name(), productDto.price(), productDto.stock(), productDto.category());
+        productLogger.info("File data: name={}, size={}, contentType={}", 
+                          file.getOriginalFilename(), file.getSize(), file.getContentType());
 
+        productLogger.info("Step 1: Validating image file...");
         validateImageFile(file);
+        productLogger.info("Step 1: Image file validation completed successfully");
 
+        productLogger.info("Step 2: Finding store by email...");
         Store store = storeRepository.findByEmail(storeEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Store not found with email: " + storeEmail));
+        productLogger.info("Step 2: Store found - ID: {}, Name: {}", store.getId(), store.getName());
 
+        productLogger.info("Step 3: Converting DTO to entity...");
         Product product = productMapper.toEntity(productDto);
         product.setStore(store);
         product.setCreatedAt(LocalDateTime.now());
+        productLogger.info("Step 3: Entity created successfully");
 
+        productLogger.info("Step 4: Converting image to base64...");
         try {
             String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
             product.setImageBase64(base64Image);
+            productLogger.info("Step 4: Image converted to base64 successfully (length: {})", base64Image.length());
         } catch (Exception e) {
-            productLogger.error("Error converting image to base64", e);
+            productLogger.error("Step 4: Error converting image to base64", e);
             throw new RuntimeException("Error processing image file");
         }
 
+        productLogger.info("Step 5: Saving product to database...");
         Product savedProduct = productRepository.save(product);
-        productLogger.info("Product created successfully with ID: {}", savedProduct.getId());
+        productLogger.info("Step 5: Product saved successfully with ID: {}", savedProduct.getId());
 
-        return productMapper.toCreateResponse(savedProduct);
+        productLogger.info("Step 6: Converting entity to response DTO...");
+        ProductCreateResponseDto response = productMapper.toCreateResponse(savedProduct);
+        productLogger.info("Step 6: Response DTO created successfully");
+        
+        productLogger.info("=== PRODUCT CREATION COMPLETED SUCCESSFULLY ===");
+        return response;
     }
 
     public List<ProductMyListDto> getMyProducts(String storeEmail) {
@@ -201,17 +220,27 @@ public class ProductService {
     }
 
     private void validateImageFile(MultipartFile file) {
+        productLogger.info("Validating image file...");
+        
         if (file == null || file.isEmpty()) {
+            productLogger.error("Image file validation failed: file is null or empty");
             throw new IllegalArgumentException("Image file is required");
         }
+        productLogger.info("File not null/empty check passed");
 
         if (file.getSize() > MAX_FILE_SIZE) {
+            productLogger.error("Image file validation failed: size {} exceeds limit {}", file.getSize(), MAX_FILE_SIZE);
             throw new IllegalArgumentException("Image file size exceeds 5MB limit");
         }
+        productLogger.info("File size check passed: {} bytes", file.getSize());
 
         String contentType = file.getContentType();
         if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
+            productLogger.error("Image file validation failed: contentType '{}' not in allowed types {}", contentType, ALLOWED_TYPES);
             throw new IllegalArgumentException("Only JPG, PNG, and WEBP images are allowed");
         }
+        productLogger.info("Content type check passed: {}", contentType);
+        
+        productLogger.info("Image file validation completed successfully");
     }
 }
