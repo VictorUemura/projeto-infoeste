@@ -158,18 +158,16 @@ public class ProductController {
     public ResponseEntity<ProductCreateResponseDto> createProduct(
             Authentication authentication,
             @Parameter(description = "Nome do produto", required = true, example = "Notebook Gamer")
-            @RequestPart("name") @NotBlank(message = "Name is required") String name,
+            @RequestPart("name") String name,
             
             @Parameter(description = "Descrição detalhada do produto", example = "Notebook gamer de alta performance com placa de vídeo dedicada")
             @RequestPart(value = "description", required = false) String description,
             
             @Parameter(description = "Preço do produto em reais", required = true, example = "2999.99")
-            @RequestPart("price") @NotNull(message = "Price is required")
-            @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0") BigDecimal price,
+            @RequestPart("price") BigDecimal price,
             
             @Parameter(description = "Quantidade em estoque", required = true, example = "50")
-            @RequestPart("stock") @NotNull(message = "Stock is required")
-            @Min(value = 0, message = "Stock must be 0 or greater") Integer stock,
+            @RequestPart("stock") Integer stock,
             
             @Parameter(description = "Categoria do produto", example = "Eletrônicos")
             @RequestPart(value = "category", required = false) String category,
@@ -179,6 +177,16 @@ public class ProductController {
         
         logger.info("Received createProduct request - name: {}, price: {}, file: {}", name, price, file.getOriginalFilename());
         logger.info("File details - size: {}, contentType: {}", file.getSize(), file.getContentType());
+        
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name is required");
+        }
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Price is required and must be greater than 0");
+        }
+        if (stock == null || stock < 0) {
+            throw new IllegalArgumentException("Stock is required and must be 0 or greater");
+        }
         
         ProductCreateDto productDto = new ProductCreateDto(name, description, price, stock, category);
         
